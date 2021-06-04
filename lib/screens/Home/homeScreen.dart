@@ -4,7 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:microblog/controladores/ControladorPostagem.dart';
-import 'package:microblog/model/Postagem.dart';
 import 'package:microblog/screens/Home/Wigets/AppBotton.dart';
 import 'package:microblog/screens/Home/Wigets/BottonBar.dart';
 import 'package:microblog/util/StatusConsulta.dart';

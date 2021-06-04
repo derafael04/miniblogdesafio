@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:microblog/controladores/ControladorPostagem.dart';
-import 'package:microblog/model/Postagem.dart';
 import 'package:microblog/screens/Login/Wigets/ButtonPadrao.dart';
+import 'package:microblog/model/Postagem.dart';
+import 'package:microblog/util/UtilDialog.dart';
 
 class ComentarScreen extends StatefulWidget {
-  const ComentarScreen({Key key}) : super(key: key);
+  final Comentario mComentario;
+  final Postagem mPostagem;
+  final Function() sucesso;
+  const ComentarScreen(
+      {Key key, this.mComentario, this.mPostagem, this.sucesso})
+      : super(key: key);
 
   @override
   _ComentarScreenState createState() => _ComentarScreenState();
@@ -14,6 +20,7 @@ class ComentarScreen extends StatefulWidget {
 
 class _ComentarScreenState extends State<ComentarScreen> {
   ControladorPostagem _controladorPostagem = GetIt.I.get<ControladorPostagem>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +40,9 @@ class _ComentarScreenState extends State<ComentarScreen> {
                   child: Column(
                     children: [
                       TextField(
-                        onChanged: (text) {},
+                        onChanged: (text) {
+                          _controladorPostagem.conteudoPublicacao = text;
+                        },
                         maxLines: 10,
                         decoration:
                             InputDecoration(hintText: "Comente sua resposta"),
@@ -60,17 +69,32 @@ class _ComentarScreenState extends State<ComentarScreen> {
                                   height: 40,
                                   child: Observer(
                                     builder: (_) {
-                                      var habilitado = _controladorPostagem.habilitarPostar;
+                                      var habilitado =
+                                          _controladorPostagem.habilitarPostar;
                                       return ButtonPadrao(
                                           colorsButton: Color(0xff00acee),
                                           colorsText: Colors.white,
                                           value: "Publicar",
-                                          onTap: () {
-                                            habilitado
-                                           ? _controladorPostagem.comentarPub();
-                                          }
-                                          : null,
-                                          );
+                                          onTap: habilitado
+                                              ? () {
+                                                  _controladorPostagem
+                                                      .comentarPub(
+                                                    widget.mComentario,
+                                                    widget.mPostagem,
+                                                    sucesso: () {
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                      widget.sucesso();
+                                                    },
+                                                    erro: (mensagem) {
+                                                      UtilDialog.exibirDialog(
+                                                          context,
+                                                          titulo: "Ops!",
+                                                          mensagem: mensagem);
+                                                    },
+                                                  );
+                                                }
+                                              : null);
                                     },
                                   )),
                             ],
